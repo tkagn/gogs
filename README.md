@@ -11,8 +11,12 @@ oc new-project gogs
 ## Build GoGs app
 
 ```bash
-oc new-build --name gogs --binary --strategy docker
-oc start-build gogs --from-dir ./
-oc new-app gogs 
+oc new-project gogs
+oc create sa gogs-sa
 oc adm policy add-scc-to-user anyuid -z gogs-sa
+oc new-build --name gogs https://github.com/tkagn/gogs
+oc start-build gogs
+
+oc new-app gogs 
+oc patch dc/minimal-notebook --patch '{"spec":{"template":{"spec":{"serviceAccountName": "gogs-sa"}}}}'
 ```
